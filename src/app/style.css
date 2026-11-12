@@ -963,6 +963,138 @@ summary {
   margin-top: 13px;
   color: #59636e;
 }
+.keymap-heading h3 {
+  margin: 20px 0 8px;
+}
+.keymap-heading p {
+  font-size: 11px;
+  margin: 0 0 16px;
+}
+.keymap-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.keymap-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #303139;
+  background: #1c1d24;
+  border-radius: 8px;
+  padding: 9px 11px;
+}
+.keymap-row .keymap-arrow {
+  color: #6d7568;
+  font-size: 15px;
+}
+.keymap-row kbd {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid #3c414b;
+  border-bottom: 3px solid #3c414b;
+  border-radius: 4px;
+  color: #c9d2bd;
+  background: #1d2027;
+  font-family: inherit;
+  font-size: 13px;
+}
+.keymap-row small {
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.keymap-lanes.capturing .keymap-row {
+  opacity: 0.45;
+}
+.keymap-row.done {
+  opacity: 1;
+  border-color: #46513c;
+}
+.keymap-row.active {
+  opacity: 1;
+  border-color: #bcf366;
+  background: linear-gradient(100deg, #bcf36614, #21251e);
+  box-shadow: 0 0 14px #bcf36633;
+}
+.keymap-row.active kbd {
+  border-color: #bcf366;
+  color: #bcf366;
+}
+.keymap-prompt {
+  color: #bcf366;
+}
+.keymap-row:not(.active) small {
+  color: #636b76;
+}
+.keymap-error {
+  color: #ff9776;
+  font-size: 11px;
+  margin: 13px 0 0;
+}
+.keymap-notice {
+  color: #bcf366;
+  font-size: 11px;
+  margin: 13px 0 0;
+}
+.keymap-locked {
+  color: #777d85;
+  font-size: 11px;
+  margin: 13px 0 0;
+}
+.keymap-actions {
+  display: flex;
+  gap: 9px;
+  margin-top: 16px;
+}
+.keymap-button {
+  flex: 1;
+  border: 1px solid #66764b;
+  background: #2c3324;
+  border-radius: 6px;
+  height: 34px;
+  font-size: 11px;
+  color: #bcf366;
+}
+.keymap-button.ghost {
+  border-color: #3b3e46;
+  background: #22242b;
+  color: #9ca0a9;
+}
+.capture-banner {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  background: #181a20f2;
+  border: 1px solid #bcf366;
+  border-radius: 8px;
+  padding: 12px 20px;
+  text-align: center;
+  box-shadow: 0 0 22px #bcf36633;
+  pointer-events: none;
+}
+.capture-banner b {
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #d7ff9b;
+}
+.capture-banner span {
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #8a917f;
+}
+.receptors button.capturing {
+  border-color: #bcf366;
+  box-shadow: 0 0 18px #bcf36666;
+}
 footer {
   display: flex;
   justify-content: space-between;

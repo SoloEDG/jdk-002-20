@@ -13,6 +13,8 @@ const props = defineProps<{
   held: Set<Lane>;
   feedback: string;
   combo: number;
+  keyLabels: string[];
+  captureLane: Lane | null;
 }>();
 defineEmits<{ down: [lane: Lane]; up: [lane: Lane] }>();
 const notes = computed(() =>
@@ -22,6 +24,12 @@ const notes = computed(() =>
     props.track.bpm,
     props.done,
   ),
+);
+const isCapturing = computed(() => props.captureLane !== null);
+const captureHint = computed(() =>
+  isCapturing.value
+    ? `正在采集第 ${(props.captureLane as number) + 1} 轨，请按下一个字母键`
+    : "",
 );
 </script>
 <template>
@@ -35,7 +43,11 @@ const notes = computed(() =>
       <div class="stage-symbol">⌁</div>
       <h3>READY TO FEEL?</h3>
       <p>戴上耳机，进入你的节奏</p>
-      <span>← ↓ ↑ → / D F J K</span>
+      <span>← ↓ ↑ → / {{ keyLabels.join(" ") }}</span>
+    </div>
+    <div v-if="isCapturing" class="capture-banner" role="status">
+      <b>{{ captureHint }}</b>
+      <span>方向键与空格不可用，只接受字母键</span>
     </div>
     <div v-if="phase === 'paused'" class="stage-message paused">
       <h3>PAUSED</h3>
@@ -76,7 +88,10 @@ const notes = computed(() =>
       <button
         v-for="(label, i) in laneLabels"
         :key="label"
-        :class="{ pressed: held.has(i as Lane) }"
+        :class="{
+          pressed: held.has(i as Lane),
+          capturing: captureLane === i,
+        }"
         :aria-label="'轨道' + label"
         @pointerdown.prevent="
           ($event.target as HTMLElement).setPointerCapture($event.pointerId);
@@ -85,7 +100,7 @@ const notes = computed(() =>
         @pointerup="$emit('up', i as Lane)"
         @pointercancel="$emit('up', i as Lane)"
       >
-        {{ label }}<small>{{ ["D", "F", "J", "K"][i] }}</small>
+        {{ label }}<small>{{ keyLabels[i] }}</small>
       </button>
     </div>
   </div>

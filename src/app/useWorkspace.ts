@@ -4,6 +4,7 @@ import { usePerformance } from "../features/performance";
 import { useJudgment, bindInput } from "../features/judgment";
 import { usePractice } from "../features/practice";
 import { useRecords, makeResult } from "../features/records";
+import { useKeymap } from "../features/keymap";
 import { makeRun } from "../shared/session";
 import type { PracticeConfig } from "../shared/session";
 import type { Lane } from "../shared/chart";
@@ -13,6 +14,7 @@ export function useWorkspace() {
     practice = usePractice(),
     judgment = useJudgment(),
     records = useRecords(),
+    keymap = useKeymap(),
     error = ref("");
   const performance = usePerformance(
     (t) => judgment.tick(t),
@@ -32,7 +34,33 @@ export function useWorkspace() {
       performance.phase.value === "playing" ||
       performance.phase.value === "paused",
   );
+
+  // 暂停 / 演出中禁止开始采集与提交，保证映射只能在非锁定状态变更
+  function beginCapture() {
+    if (locked.value) return;
+    keymap.beginCapture();
+  }
+  function commitKeymap() {
+    if (locked.value) return;
+    keymap.commit();
+  }
+  function cancelCapture() {
+    keymap.cancelCapture();
+  }
+
+  const input = bindInput({
+    getMapping: () => keymap.mapping.value,
+    capture: (code) =>
+      keymap.capturingLane.value !== null && keymap.captureKey(code),
+    down,
+    up,
+    pause: toggle,
+  });
+
   async function start() {
+    // 重开 / 重新开始：清除遗留按下状态与未完成的采集
+    input.reset();
+    keymap.reset();
     const run = makeRun(library.selected.value, practice.config.value);
     judgment.reset(run);
     error.value = "";
@@ -69,16 +97,15 @@ export function useWorkspace() {
   function updatePractice(patch: Partial<PracticeConfig>) {
     if (!locked.value) practice.update(patch, library.selected.value.beats);
   }
-  let cleanup = () => {};
+
   const blur = () => {
     if (performance.phase.value === "playing") pause();
   };
   onMounted(() => {
-    cleanup = bindInput(down, up, toggle);
     window.addEventListener("blur", blur);
   });
   onUnmounted(() => {
-    cleanup();
+    input.unbind();
     window.removeEventListener("blur", blur);
     performance.reset();
   });
@@ -88,6 +115,7 @@ export function useWorkspace() {
     judgment,
     records,
     performance,
+    keymap,
     locked,
     error,
     start,
@@ -96,5 +124,8 @@ export function useWorkspace() {
     up,
     pause,
     updatePractice,
+    beginCapture,
+    commitKeymap,
+    cancelCapture,
   };
 }

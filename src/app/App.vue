@@ -4,6 +4,7 @@ import { LibraryPanel } from "../features/library";
 import { StageView, TransportBar } from "../features/performance";
 import { JudgmentPanel } from "../features/judgment";
 import { PracticePanel } from "../features/practice";
+import { KeymapPanel } from "../features/keymap";
 import { RecordsPanel } from "../features/records";
 import { secondsAt } from "../shared/chart";
 const w = useWorkspace();
@@ -43,6 +44,18 @@ const { library: l, practice: p, judgment: j, records: r, performance: s } = w;
           :config="p.config.value"
           :locked="w.locked.value"
           @update="w.updatePractice"
+        /><KeymapPanel
+          :mapping="w.keymap.mapping.value"
+          :draft="w.keymap.draft.value"
+          :capturing-lane="w.keymap.capturingLane.value"
+          :labels="w.keymap.labels.value"
+          :display-labels="w.keymap.displayLabels.value"
+          :error="w.keymap.error.value"
+          :notice="w.keymap.notice.value"
+          :locked="w.locked.value"
+          @begin="w.beginCapture"
+          @cancel="w.cancelCapture"
+          @save="w.commitKeymap"
         />
       </div>
       <section class="performance panel">
@@ -68,6 +81,8 @@ const { library: l, practice: p, judgment: j, records: r, performance: s } = w;
           :held="j.held.value"
           :feedback="j.feedback.value"
           :combo="j.stats.value.combo"
+          :key-labels="w.keymap.displayLabels.value"
+          :capture-lane="w.keymap.capturingLane.value"
           @down="w.down"
           @up="w.up"
         /><TransportBar
@@ -99,8 +114,13 @@ const { library: l, practice: p, judgment: j, records: r, performance: s } = w;
         />
         <div class="key-guide">
           <span>PLAY GUIDE</span>
-          <p>方向键或 D F J K 进行演奏<br />空格暂停 · 切出窗口自动暂停</p>
-          <div><kbd>D</kbd><kbd>F</kbd><kbd>J</kbd><kbd>K</kbd></div>
+          <p>
+            方向键固定备用，字母键可在左下角自定义<br />空格暂停 ·
+            切出窗口自动暂停
+          </p>
+          <div>
+            <kbd v-for="k in w.keymap.labels.value" :key="k">{{ k }}</kbd>
+          </div>
           <small>建议佩戴耳机，享受完整声场</small>
         </div>
       </aside>
